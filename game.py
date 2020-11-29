@@ -14,7 +14,7 @@ from budget import Budget
 class Game(arcade.Window, CallbacksRegisterer):
 
     def __init__(self):
-        arcade.Window.__init__(self, SCREEN_WIDTH, SCREEN_HEIGHT)
+        arcade.Window.__init__(self, SCREEN_WIDTH, SCREEN_HEIGHT, fullscreen=True)
         CallbacksRegisterer.__init__(self)
         self._is_gameplay_paused = False
         self._on_screen_question = None
@@ -92,3 +92,9 @@ class Game(arcade.Window, CallbacksRegisterer):
         if self._is_gameplay_paused:
             return
         CallbacksRegisterer.on_mouse_motion(self, x, y, dx, dy)
+
+    def on_key_press(self, symbol: int, modifiers: int):
+        if symbol == arcade.key.ESCAPE:
+            self.set_fullscreen(False)
+        elif symbol == arcade.key.F:
+            self.set_fullscreen(True)
