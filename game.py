@@ -25,6 +25,7 @@ class Game(arcade.Window, CallbacksRegisterer):
         self._questions_stages = None
         self._audience_share = None
         self._budget = None
+        self._background = None
 
     def init(self):
         self._budget = Budget()
@@ -52,6 +53,7 @@ class Game(arcade.Window, CallbacksRegisterer):
         ])
         self._questions_stages = QuestionsStages()
         self._current_contestant = Contestant()
+        self._background = arcade.load_texture("images/1_pixel.png")
 
     @property
     def audience_share(self) -> AudienceShare:
@@ -97,6 +99,7 @@ class Game(arcade.Window, CallbacksRegisterer):
 
     def on_draw(self):
         arcade.start_render()
+        arcade.draw_lrwh_rectangle_textured(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, self._background)
         CallbacksRegisterer.on_draw(self)
 
     def _calc_viewport_ratio(self):
