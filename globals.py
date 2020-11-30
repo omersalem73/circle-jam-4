@@ -1,8 +1,9 @@
 from timer import Timer
 
 
-SCREEN_WIDTH = 1200
-SCREEN_HEIGHT = 720
+SCALE = 0.6
+SCREEN_WIDTH = int(1920 * SCALE)
+SCREEN_HEIGHT = int(1080 * SCALE)
 
 timers = []
 _game = None
