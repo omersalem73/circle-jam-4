@@ -1,5 +1,3 @@
-import time
-
 import arcade
 
 from globals import get_game, sleep_before
