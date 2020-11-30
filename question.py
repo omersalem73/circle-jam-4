@@ -1,3 +1,5 @@
+import time
+
 import arcade
 
 from globals import get_game, sleep_before
@@ -94,7 +96,7 @@ class Question:
         if selected == correct:
             get_game().questions_stages.next_stage()
         else:
-            get_game()
+            get_game().questions_stages.reset()
 
     @property
     def question_data(self) -> QuestionData:
