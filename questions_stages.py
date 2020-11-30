@@ -23,11 +23,23 @@ class QuestionsStages:
         get_game().register('on_draw', self.on_draw)
 
     @sleep_before(2)
-    def next_stage(self):
-        self._current_stage_index += 1
+    def reset(self):
+        self._current_stage_index = 0
         get_game().on_screen_question.reset_data()
         get_game().audience_share.update()
         add_timer(0.5, lambda: get_game().question_pool.show())
+
+    @sleep_before(2)
+    def next_stage(self):
+        if self._current_stage_index == len(self._stages):
+            # TODO: future - choose new contestant?
+            self.reset()
+        else:
+            self._current_stage_index += 1
+            prev_question = get_game().on_screen_question.question_data
+            get_game().on_screen_question.reset_data()
+            get_game().audience_share.update(prev_question)
+            add_timer(0.5, lambda: get_game().question_pool.show())
 
     def on_draw(self):
         selected_lbl = self._stages[self._current_stage_index]

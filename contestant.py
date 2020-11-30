@@ -1,19 +1,25 @@
 from globals import get_game
 from random import random, choice
 
+from question import Question
+from question_data import QuestionDifficulty
+
 
 class Contestant:
 
-    def __init__(self, chance_of_answer_correct=0.9):
-        self._chance_of_answer_correct = chance_of_answer_correct
+    def __init__(self):
+        self._answer_prob = {
+            QuestionDifficulty.HARD: 0.3,
+            QuestionDifficulty.AVERAGE: 0.7,
+            QuestionDifficulty.EASY: 0.86
+        }
 
-    def answer(self):
-        correct_answer = get_game().on_screen_question.get_correct_answer()
-        wrong_answers = get_game().on_screen_question.get_wrong_answers()
+    def answer(self, question: Question):
+        correct_answer = question.get_correct_answer()
+        wrong_answers = question.get_wrong_answers()
 
-        if random() <= self._chance_of_answer_correct:
+        if random() <= self._answer_prob[question.question_data.difficulty]:
             correct_answer.select()
         else:
             choice(wrong_answers).select()
 
-        get_game().on_screen_question.verify_answered_question()
