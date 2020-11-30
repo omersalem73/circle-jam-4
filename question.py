@@ -70,6 +70,9 @@ class Question:
         self._correct_answer_index = -1
 
     def on_draw(self):
+        if self._correct_answer_index == -1:
+            return
+
         arcade.draw_rectangle_filled(600, 40 + 80 * 2, 600, 80, arcade.color.BLUE)
         arcade.draw_text(self._text, 600, 40 + 80 * 2, arcade.color.WHITE, 26,
                          anchor_x='center')

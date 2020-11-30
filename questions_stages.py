@@ -3,12 +3,14 @@ import arcade
 from globals import get_game, sleep_before, add_timer, SCREEN_WIDTH, SCREEN_HEIGHT
 from label import Label
 
+STAGES = [5000, 10000, 50000, 100000, 500000, 1000000]
+
 
 class QuestionsStages:
 
     def __init__(self):
         self._current_stage_index = 0
-        self._stages = [Label('${}'.format(10 ** (i + 3)), 0, 0) for i in range(5)]
+        self._stages = [Label('${}'.format(stage), 0, 0) for stage in STAGES]
         self._horizon_padding = 30
         self._max_width = max([lbl.get_size()[0] for lbl in self._stages])
         height_sum = sum([lbl.get_size()[1] for lbl in self._stages]) + (10 * (len(self._stages) - 1))
