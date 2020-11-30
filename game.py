@@ -16,6 +16,7 @@ class Game(arcade.Window, CallbacksRegisterer):
     def __init__(self):
         arcade.Window.__init__(self, SCREEN_WIDTH, SCREEN_HEIGHT, fullscreen=False)
         CallbacksRegisterer.__init__(self)
+        self._background_color = arcade.color.DARK_BLUE
         self._window_size = SCREEN_WIDTH, SCREEN_HEIGHT
         self._is_gameplay_paused = False
         self._on_screen_question = None

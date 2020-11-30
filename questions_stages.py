@@ -1,20 +1,41 @@
+from enum import Enum
+
 import arcade
 
 from globals import get_game, sleep_before, add_timer, SCREEN_WIDTH, SCREEN_HEIGHT
 from label import Label
 
-STAGES = [5000, 10000, 50000, 100000, 500000, 1000000]
+
+class StageType(Enum):
+    NORMAL = 'Normal'
+    EXIT_POINT = 'Exit Point'
+
+
+class Stage:
+    def __init__(self, money, stage_type=StageType.NORMAL):
+        self.money = money
+        self.stage_type = stage_type
+
+
+STAGES = [Stage(100), Stage(200), Stage(500), Stage(1000, StageType.EXIT_POINT),
+          Stage(2000), Stage(4000), Stage(8000), Stage(16000, StageType.EXIT_POINT),
+          Stage(32000), Stage(64000), Stage(125000, StageType.EXIT_POINT),
+          Stage(500000), Stage(1000000, StageType.EXIT_POINT)]
 
 
 class QuestionsStages:
 
     def __init__(self):
         self._current_stage_index = 0
-        self._stages = [Label('${}'.format(stage), 0, 0) for stage in STAGES]
+        self._stages = []
+        for stage in STAGES:
+            color = arcade.color.BLACK if stage.stage_type is StageType.NORMAL else arcade.color.WHITE
+            self._stages.append(Label('${}'.format(stage.money), 0, 0, color))
+
         self._horizon_padding = 30
         self._max_width = max([lbl.get_size()[0] for lbl in self._stages])
         height_sum = sum([lbl.get_size()[1] for lbl in self._stages]) + (10 * (len(self._stages) - 1))
-        current_y = SCREEN_HEIGHT * 0.75 - height_sum / 2
+        current_y = 165
         for i, lbl in enumerate(self._stages):
             _, h = lbl.get_size()
             lbl.x = SCREEN_WIDTH - self._max_width - self._horizon_padding
