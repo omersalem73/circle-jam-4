@@ -28,6 +28,14 @@ class Label:
         self._y = y
 
     @property
+    def color(self):
+        return self._color
+
+    @color.setter
+    def color(self, color):
+        self._color = color
+
+    @property
     def text(self):
         return self._text
 

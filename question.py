@@ -2,7 +2,6 @@ import arcade
 
 from globals import get_game, sleep_before, SCREEN_WIDTH
 from question_data import QuestionData
-from ui_base import is_point_in_rect
 from label import Label
 from random import randint
 
@@ -37,13 +36,14 @@ class QuestionUI:
         self._question_label.text = question
         self._question_label.x = SCREEN_WIDTH / 2 - self._question_label.get_size()[0] / 2
         self._question_label.y = self._question_y - self._question_label.get_size()[1] / 2
+        letters = ['A', 'B', 'C', 'D']
         for i, answer in enumerate(answers):
             lbl = self._answer_labels[i]
-            lbl.text = answer
+            lbl.text = '{}: {}'.format(letters[i], answer)
             if (i == 0) or (i == 2):
-                lbl.x = SCREEN_WIDTH / 4 - lbl.get_size()[0] / 2
+                lbl.x = 210 * SCREEN_WIDTH / 2 / self._left_answer_bg.width
             else:
-                lbl.x = SCREEN_WIDTH / 4 * 3 - lbl.get_size()[0] / 2
+                lbl.x = SCREEN_WIDTH / 2 + 120 * SCREEN_WIDTH / 2 / self._right_answer_bg.width
             if (i == 0) or (i == 1):
                 lbl.y = self._upper_answer_y - lbl.get_size()[1] / 2
             else:
@@ -54,18 +54,21 @@ class QuestionUI:
             self._answers_bgs[i] = self._left_answer_correct_bg
         else:
             self._answers_bgs[i] = self._right_answer_correct_bg
+        self._answer_labels[i].color = arcade.color.BLACK
 
     def select(self, i):
         if (i == 0) or (i == 2):
             self._answers_bgs[i] = self._left_answer_selected_bg
         else:
             self._answers_bgs[i] = self._right_answer_selected_bg
+        self._answer_labels[i].color = arcade.color.BLACK
 
     def unselect(self, i):
         if (i == 0) or (i == 2):
             self._answers_bgs[i] = self._left_answer_bg
         else:
             self._answers_bgs[i] = self._right_answer_bg
+        self._answer_labels[i].color = arcade.color.WHITE
 
     def on_draw(self):
         h = self._answer_height
@@ -86,69 +89,46 @@ class QuestionUI:
 
 class PossibleAnswer:
 
-    def __init__(self, tile_x, tile_y):
-        self._tile_x = tile_x
-        self._tile_y = tile_y
-        self._text = ''
-        self._label = Label('', 0, 0)
-        self._color = arcade.color.RED
-
-    def set_text(self, text):
-        self._text = text
-        self._label.text = text
+    def __init__(self, index, ui: QuestionUI):
+        self._index = index
+        self._ui = ui
+        self._is_selected = False
 
     def select(self):
-        self._color = arcade.color.YELLOW
+        self._ui.select(self._index)
+        self._is_selected = True
 
     def mark_as_correct(self):
-        self._color = arcade.color.GREEN
+        self._ui.mark_as_correct(self._index)
 
     def unselect(self):
-        self._color = arcade.color.RED
+        self._ui.unselect(self._index)
+        self._is_selected = False
 
+    @property
     def is_selected(self):
-        return self._color == arcade.color.YELLOW
-
-    def on_draw(self):
-        self._label.on_draw()
-        arcade.draw_text(self._text, 300 + 600 * self._tile_x, 40 + 80 * self._tile_y, arcade.color.WHITE, 26,
-                         anchor_x='center')
-
-    def on_mouse_press(self, x, y, button, _modifiers):
-        if button == arcade.MOUSE_BUTTON_LEFT:
-            if is_point_in_rect(x, y, 600 * self._tile_x, 80 * self._tile_y, 600, 80):
-                self.select()
+        return self._is_selected
 
 
 class Question:
 
     def __init__(self):
-        self._text = ''
         self._question_data = None
-        self._answers = [
-            PossibleAnswer(0, 0),
-            PossibleAnswer(1, 0),
-            PossibleAnswer(0, 1),
-            PossibleAnswer(1, 1)
-        ]
-        self._correct_answer_index = -1
         self._ui = QuestionUI()
+        self._answers = [PossibleAnswer(i, self._ui) for i in range(4)]
+        self._correct_answer_index = -1
         get_game().register('on_draw', self.on_draw)
 
     def update_data(self, question_data: QuestionData):
         self._question_data = question_data
-        self._text = question_data.text
-        self._ui.set_texts(question_data.text, [question_data.correct_answer] + question_data.three_wrong_answers)
         self._correct_answer_index = randint(0, 3)
-        self.get_correct_answer().set_text(question_data.correct_answer)
-        for wrong_answer, wrong_answer_text in zip(self.get_wrong_answers(), question_data.three_wrong_answers):
-            wrong_answer.set_text(wrong_answer_text)
+        answers = [question_data.correct_answer] + question_data.three_wrong_answers
+        answers[0], answers[self._correct_answer_index] = answers[self._correct_answer_index], answers[0]
+        self._ui.set_texts(question_data.text, answers)
 
     def reset_data(self):
-        self._text = ''
-        for answer in self._answers:
-            answer.set_text('')
-            answer.unselect()
+        if self._correct_answer_index != -1:
+            self._get_selected_answer().unselect()
         self._correct_answer_index = -1
 
     def on_draw(self):
@@ -164,7 +144,7 @@ class Question:
         return [ans for i, ans in enumerate(self._answers) if i != self._correct_answer_index]
 
     def _get_selected_answer(self):
-        return [ans for ans in self._answers if ans.is_selected()][0]
+        return [ans for ans in self._answers if ans.is_selected][0]
 
     @sleep_before(2)
     def verify_answered_question(self):
