@@ -1,4 +1,3 @@
-from globals import get_game
 from random import random, choice
 
 from question import Question
