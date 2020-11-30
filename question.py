@@ -1,6 +1,7 @@
 import arcade
 
 from globals import get_game, sleep_before
+from question_data import QuestionData
 from ui_base import is_point_in_rect
 from random import randint
 
@@ -43,6 +44,7 @@ class Question:
 
     def __init__(self):
         self._text = ''
+        self._question_data = None
         self._answers = [
             PossibleAnswer(0, 0),
             PossibleAnswer(1, 0),
@@ -52,7 +54,8 @@ class Question:
         self._correct_answer_index = -1
         get_game().register('on_draw', self.on_draw)
 
-    def update_data(self, question_data):
+    def update_data(self, question_data: QuestionData):
+        self._question_data = question_data
         self._text = question_data.text
         self._correct_answer_index = randint(0, 3)
         self.get_correct_answer().set_text(question_data.correct_answer)
@@ -92,3 +95,7 @@ class Question:
             get_game().questions_stages.next_stage()
         else:
             get_game()
+
+    @property
+    def question_data(self) -> QuestionData:
+        return self._question_data

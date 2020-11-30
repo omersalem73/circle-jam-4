@@ -61,7 +61,10 @@ class QuestionsPool(VisibilityToggle):
 
     @sleep_before(3)
     def _answer_question(self):
-        get_game().current_contestant.answer()
+        game = get_game()
+        question = game.on_screen_question
+        game.current_contestant.answer(question)
+        question.verify_answered_question()
 
     @sleep_before(1)
     def _show_selected_answer(self):
