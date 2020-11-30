@@ -1,6 +1,6 @@
 import arcade
 
-from globals import timers, SCREEN_WIDTH, SCREEN_HEIGHT, get_game
+from globals import timers, SCREEN_WIDTH, SCREEN_HEIGHT
 from ui_base import CallbacksRegisterer
 from question import Question
 from question_data import QuestionData, QuestionDifficulty
@@ -14,8 +14,9 @@ from budget import Budget
 class Game(arcade.Window, CallbacksRegisterer):
 
     def __init__(self):
-        arcade.Window.__init__(self, SCREEN_WIDTH, SCREEN_HEIGHT, fullscreen=True)
+        arcade.Window.__init__(self, SCREEN_WIDTH, SCREEN_HEIGHT, fullscreen=False)
         CallbacksRegisterer.__init__(self)
+        self._window_size = SCREEN_WIDTH, SCREEN_HEIGHT
         self._is_gameplay_paused = False
         self._on_screen_question = None
         self._on_screen_question_data = None
@@ -98,18 +99,28 @@ class Game(arcade.Window, CallbacksRegisterer):
         arcade.start_render()
         CallbacksRegisterer.on_draw(self)
 
+    def _calc_viewport_ratio(self):
+        return SCREEN_WIDTH / self._window_size[0], SCREEN_HEIGHT / self._window_size[1]
+
     def on_mouse_press(self, x, y, button, modifiers):
         if self._is_gameplay_paused:
             return
-        CallbacksRegisterer.on_mouse_press(self, x, y, button, modifiers)
+        rx, ry = self._calc_viewport_ratio()
+        CallbacksRegisterer.on_mouse_press(self, x * rx, y * ry, button, modifiers)
 
     def on_mouse_motion(self, x, y, dx, dy):
         if self._is_gameplay_paused:
             return
-        CallbacksRegisterer.on_mouse_motion(self, x, y, dx, dy)
+
+        rx, ry = self._calc_viewport_ratio()
+        CallbacksRegisterer.on_mouse_motion(self, x * rx, y * ry, dx, dy)
 
     def on_key_press(self, symbol: int, modifiers: int):
         if symbol == arcade.key.ESCAPE:
             self.set_fullscreen(False)
+            self.set_viewport(0, SCREEN_WIDTH, 0, SCREEN_HEIGHT)
+            self._window_size = self.get_size()
         elif symbol == arcade.key.F:
             self.set_fullscreen(True)
+            self.set_viewport(0, SCREEN_WIDTH, 0, SCREEN_HEIGHT)
+            self._window_size = self.get_size()
