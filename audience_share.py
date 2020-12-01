@@ -41,8 +41,8 @@ class AudienceShare:
             self._calc_share(question_answered.difficulty)
         self._label.text = 'Audience Share: {}'.format(self._share_as_str())
         w, h = self._label.get_size()
-        self._label.x = SCREEN_WIDTH - w - 10
-        self._label.y = SCREEN_HEIGHT - h - 10
+        self._label.x = 10
+        self._label.y = SCREEN_HEIGHT - 80
         get_game().budget.update()
 
     def on_draw(self):

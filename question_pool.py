@@ -36,10 +36,7 @@ class QuestionsPool(VisibilityToggle):
         super().show()
         self._selected_question = None
 
-    def on_draw(self):
-        if not self.is_visible:
-            return
-
+    def draw_if_visible(self):
         if self._show_highlight:
             label = self._labels[self._highlighted_index]
             w, h = label.get_size()
@@ -70,6 +67,7 @@ class QuestionsPool(VisibilityToggle):
     def _show_selected_answer(self):
         self._selected_question = self._questions[self._highlighted_index]
         self.hide()
+        get_game().questions_stages.hide()
         get_game().unpause_gameplay()
         self._answer_question()
 
