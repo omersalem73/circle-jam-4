@@ -1,5 +1,6 @@
 import arcade
 
+from contestant_finish_message import ContestantFinishMessage
 from globals import timers, SCREEN_WIDTH, SCREEN_HEIGHT
 from ui_base import CallbacksRegisterer
 from question import Question
@@ -26,11 +27,13 @@ class Game(arcade.Window, CallbacksRegisterer):
         self._questions_stages = None
         self._audience_share = None
         self._budget = None
+        self._contestant_finish_message = None
         self._background = None
 
     def init(self):
         self._budget = Budget()
         self._audience_share = AudienceShare()
+        self._contestant_finish_message = ContestantFinishMessage()
         self._on_screen_question = Question()
         self._questions_pool = QuestionsPool(*[
             QuestionData(
@@ -63,6 +66,10 @@ class Game(arcade.Window, CallbacksRegisterer):
     @property
     def budget(self) -> Budget:
         return self._budget
+
+    @property
+    def contestant_finish_message(self) -> ContestantFinishMessage:
+        return self._contestant_finish_message
 
     @property
     def current_contestant(self) -> Contestant:
