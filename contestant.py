@@ -14,7 +14,7 @@ class Contestant:
             QuestionDifficulty.EASY: 0.86
         }
         self._prize_to_quit_prob = {
-            1000: 0.3,
+            1000: 1,
             32000: 0.7
         }
 

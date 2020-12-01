@@ -29,8 +29,9 @@ class QuestionsStages(VisibilityToggle):
         super().__init__()
         self._current_stage_index = 0
         self._stages = []
+        for stage in STAGES:
+            self._stages.append(Label('${}'.format(stage.money), 0, 0))
         self.reset_label_colors()
-
         self._horizon_padding = 30
         self._max_width = max([lbl.get_size()[0] for lbl in self._stages])
         height_sum = sum([lbl.get_size()[1] for lbl in self._stages]) + (10 * (len(self._stages) - 1))
@@ -53,17 +54,16 @@ class QuestionsStages(VisibilityToggle):
             return 0
 
     def reset_label_colors(self):
-        self._stages = []
-        for stage in STAGES:
+        for i, stage in enumerate(STAGES):
             color = arcade.color.ORANGE if stage.stage_type is StageType.NORMAL else arcade.color.WHITE
-            self._stages.append(Label('${}'.format(stage.money), 0, 0, color))
+            self._stages[i].color = color
 
-    @sleep_before(2)
+    @sleep_before(1)
     def reset(self):
-        self.reset_label_colors()
-        get_game().budget.update(self.current_exit_money())
         get_game().contestant_finish_message.show()
         add_timer(2, get_game().contestant_finish_message.hide)
+        self.reset_label_colors()
+        get_game().budget.update(self.current_exit_money())
 
         self._current_stage_index = 0
         get_game().on_screen_question.reset_data()
@@ -79,10 +79,10 @@ class QuestionsStages(VisibilityToggle):
         else:
             self._current_stage_index += 1
             prev_question = get_game().on_screen_question.question_data
-            get_game().on_screen_question.reset_data()
             get_game().audience_share.update(prev_question)
             if get_game().current_contestant.consider_quitting():
                 self.reset()
+            get_game().on_screen_question.reset_data()
             self.show()
             add_timer(0.5, get_game().question_pool.show)
 

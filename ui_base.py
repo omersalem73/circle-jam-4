@@ -37,6 +37,7 @@ class VisibilityToggle:
 
     def show(self):
         self._is_visible = True
+        self.on_draw()
 
     def draw_if_visible(self):
         raise NotImplemented
