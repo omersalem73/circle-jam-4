@@ -25,8 +25,8 @@ class CallbacksRegisterer:
 
 class VisibilityToggle:
 
-    def __init__(self):
-        self._is_visible = True
+    def __init__(self, is_visible=True):
+        self._is_visible = is_visible
 
     @property
     def is_visible(self):

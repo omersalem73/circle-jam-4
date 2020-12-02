@@ -1,6 +1,6 @@
 import arcade
 
-from globals import SCREEN_WIDTH, SCREEN_HEIGHT, get_game, sleep_before
+from globals import SCREEN_WIDTH, SCREEN_HEIGHT, get_game, sleep_before, add_timer
 from ui_base import VisibilityToggle, is_point_in_rect
 from label import Label
 
@@ -8,22 +8,23 @@ from label import Label
 class QuestionsPool(VisibilityToggle):
 
     def __init__(self, easy_question, average_question, hard_question):
-        super().__init__()
+        super().__init__(is_visible=False)
         self._show_highlight = False
         self._highlighted_index = 0
         self._selected_question = None
 
-        easy_question_label = Label(easy_question.text, 0, 0)
-        average_question_label = Label(average_question.text, 0, 0)
-        hard_question_label = Label(hard_question.text, 0, 0)
+        self._choose_question_label = Label("Choose a question difficulty:", 0, 0)
+        easy_question_label = Label('Easy', 0, 0)
+        average_question_label = Label('Average', 0, 0)
+        hard_question_label = Label('Hard', 0, 0)
 
-        easy_question_label.x = SCREEN_WIDTH / 2 - easy_question_label.get_size()[0] / 2
-        average_question_label.x = SCREEN_WIDTH / 2 - average_question_label.get_size()[0] / 2
-        hard_question_label.x = SCREEN_WIDTH / 2 - hard_question_label.get_size()[0] / 2
+        total_w = self._choose_question_label.get_size()[0] + 25 + easy_question_label.get_size()[0] + 25 + \
+            average_question_label.get_size()[0] + 25 + hard_question_label.get_size()[0]
 
-        average_question_label.y = SCREEN_HEIGHT / 2 - average_question_label.get_size()[1] / 2
-        easy_question_label.y = average_question_label.y + average_question_label.get_size()[1] + 10
-        hard_question_label.y = average_question_label.y - hard_question_label.get_size()[1] - 10
+        self._choose_question_label.x = SCREEN_WIDTH / 2 - total_w / 2
+        easy_question_label.x = self._choose_question_label.x + self._choose_question_label.get_size()[0] + 25
+        average_question_label.x = easy_question_label.x + easy_question_label.get_size()[0] + 25
+        hard_question_label.x = average_question_label.x + average_question_label.get_size()[0] + 25
 
         self._questions = [easy_question, average_question, hard_question]
         self._labels = [easy_question_label, average_question_label, hard_question_label]
@@ -35,6 +36,10 @@ class QuestionsPool(VisibilityToggle):
     def show(self):
         super().show()
         self._selected_question = None
+        self._choose_question_label.y = get_game().on_screen_question_ui.get_question_box_y() - \
+            self._choose_question_label.get_size()[1] / 2
+        for lbl in self._labels:
+            lbl.y = self._choose_question_label.y
 
     def draw_if_visible(self):
         if self._show_highlight:
@@ -42,6 +47,7 @@ class QuestionsPool(VisibilityToggle):
             w, h = label.get_size()
             arcade.draw_rectangle_filled(label.x + w / 2, label.y + h / 2, w + 10, h + 10, arcade.color.ORANGE)
 
+        self._choose_question_label.on_draw()
         for label in self._labels:
             label.on_draw()
 
@@ -58,17 +64,19 @@ class QuestionsPool(VisibilityToggle):
 
     @sleep_before(3)
     def _answer_question(self):
-        game = get_game()
-        question = game.on_screen_question
-        game.current_contestant.answer(question)
+        question = get_game().on_screen_question
+        get_game().current_contestant.answer(question)
         question.verify_answered_question()
 
     @sleep_before(1)
     def _show_selected_answer(self):
         self._selected_question = self._questions[self._highlighted_index]
         self.hide()
+        get_game().background_controller.show_host()
         get_game().questions_stages.hide()
         get_game().unpause_gameplay()
+        add_timer(1, lambda: get_game().background_controller.show_question())
+        add_timer(2, lambda: get_game().background_controller.show_contestant())
         self._answer_question()
 
     def on_mouse_press(self,  _x, _y, button, _modifiers):

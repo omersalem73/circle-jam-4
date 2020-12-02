@@ -50,6 +50,7 @@ class QuestionsStages(VisibilityToggle):
 
     @sleep_before(2)
     def reset(self):
+        get_game().background_controller.show_select_question()
         self.reset_label_colors()
         get_game().budget.update(self._current_prize_money)
         self._current_stage_index = 0
@@ -61,6 +62,7 @@ class QuestionsStages(VisibilityToggle):
 
     @sleep_before(2)
     def next_stage(self):
+        get_game().background_controller.show_select_question()
         if self._current_stage_index == len(self._stages):
             # TODO: future - choose new contestant?
             self._current_prize_money = STAGES[-1].money
