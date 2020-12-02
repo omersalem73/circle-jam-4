@@ -68,7 +68,7 @@ class QuestionsPool(VisibilityToggle):
         get_game().current_contestant.answer(question)
         question.verify_answered_question()
 
-    @sleep_before(1)
+    @sleep_before(0.1)
     def _show_selected_answer(self):
         self._selected_question = self._questions[self._highlighted_index]
         self.hide()
