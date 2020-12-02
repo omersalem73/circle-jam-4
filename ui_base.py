@@ -25,8 +25,8 @@ class CallbacksRegisterer:
 
 class VisibilityToggle:
 
-    def __init__(self):
-        self._is_visible = True
+    def __init__(self, is_visible=True):
+        self._is_visible = is_visible
 
     @property
     def is_visible(self):
@@ -37,6 +37,14 @@ class VisibilityToggle:
 
     def show(self):
         self._is_visible = True
+
+    def draw_if_visible(self):
+        raise NotImplemented
+
+    def on_draw(self):
+        if not self.is_visible:
+            return
+        return self.draw_if_visible()
 
 
 def is_point_in_rect(x, y, rx, ry, rw, rh):
