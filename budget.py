@@ -23,6 +23,9 @@ class BudgetUI:
         self._value_label.y = self._bar_y + self._bar_h / 2 - self._value_label.get_size()[1] / 2
         self._value_label.x = PADDING + WIDTH - self._value_label.get_size()[0] - PADDING / 2 - BORDER
 
+    def get_y(self):
+        return self._bar_y
+
     def toggle_negative_budget_bgcolor(self):
         if self._negative_budget_bgcolor == arcade.color.RED:
             self._negative_budget_bgcolor = arcade.color.DARK_RED
@@ -61,6 +64,10 @@ class Budget:
 
         get_game().register('on_update', self.on_update)
         get_game().register('on_draw', self.on_draw)
+
+    @property
+    def ui(self):
+        return self._ui
 
     @staticmethod
     def _budget_as_str_abs(budget):

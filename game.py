@@ -132,7 +132,7 @@ class Game(arcade.Window, CallbacksRegisterer):
 
     def on_draw(self):
         arcade.start_render()
-        arcade.draw_lrwh_rectangle_textured(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, self._background_controller.current_bg)
+        self._background_controller.on_draw()
         CallbacksRegisterer.on_draw(self)
 
     def _calc_viewport_ratio(self):
