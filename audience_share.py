@@ -30,8 +30,8 @@ class AudienceShare:
 
     def _share_as_str(self):
         as_str = str(self._share)
-        # if as_str[1] == '.':
-        #     return as_str[:4] + '%'
+        if as_str[1] == '.':
+            return as_str[:4] + '%'
         return as_str[:5] + '%'
 
     def update(self, question_answered: typing.Optional[QuestionData] = None):
@@ -43,7 +43,7 @@ class AudienceShare:
         w, h = self._label.get_size()
         self._label.x = 10
         self._label.y = SCREEN_HEIGHT - 80
-        get_game().budget.update()
+        get_game().budget.add_amount(10000)
 
     def on_draw(self):
         self._label.on_draw()

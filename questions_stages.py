@@ -16,11 +16,11 @@ class Stage:
     def __init__(self, money, stage_type=StageType.NORMAL):
         self.money = money
         self.stage_type = stage_type
+        self.color = arcade.color.ORANGE if stage_type is StageType.NORMAL else arcade.color.WHITE
 
 
-STAGES = [Stage(100), Stage(200), Stage(500), Stage(1000, StageType.EXIT_POINT),
-          Stage(2000), Stage(4000), Stage(8000), Stage(16000), Stage(32000, StageType.EXIT_POINT),
-          Stage(64000), Stage(125000), Stage(500000), Stage(1000000, StageType.EXIT_POINT)]
+STAGES = [Stage(1000), Stage(8000), Stage(16000), Stage(32000, StageType.EXIT_POINT),
+          Stage(125000), Stage(500000), Stage(1000000, StageType.EXIT_POINT)]
 
 
 class QuestionsStages(VisibilityToggle):
@@ -29,17 +29,17 @@ class QuestionsStages(VisibilityToggle):
         super().__init__()
         self._current_stage_index = 0
         self._stages = []
-        self.reset_label_colors()
+        for stage in STAGES:
+            self._stages.append(Label('${}'.format(stage.money), 0, 0, stage.color))
 
         self._horizon_padding = 30
         self._max_width = max([lbl.get_size()[0] for lbl in self._stages])
         height_sum = sum([lbl.get_size()[1] for lbl in self._stages]) + (10 * (len(self._stages) - 1))
-        current_y = 100
+        current_y = SCREEN_HEIGHT - height_sum - 10
         for i, lbl in enumerate(self._stages):
-            _, h = lbl.get_size()
             lbl.x = SCREEN_WIDTH - self._max_width - self._horizon_padding
             lbl.y = current_y
-            current_y += h + 10
+            current_y += lbl.get_size()[1] + 10
         get_game().register('on_draw', self.on_draw)
 
     def is_currently_on_exit_point(self):
@@ -53,16 +53,14 @@ class QuestionsStages(VisibilityToggle):
             return 0
 
     def reset_label_colors(self):
-        self._stages = []
-        for stage in STAGES:
-            color = arcade.color.ORANGE if stage.stage_type is StageType.NORMAL else arcade.color.WHITE
-            self._stages.append(Label('${}'.format(stage.money), 0, 0, color))
+        for lbl, stage in zip(self._stages, STAGES):
+            lbl.color = stage.color
 
     @sleep_before(2)
     def reset(self):
         get_game().background_controller.show_select_question()
         self.reset_label_colors()
-        get_game().budget.update(self.current_exit_money())
+        get_game().budget.lose_amount(self.current_exit_money())
         get_game().contestant_finish_message.show()
         add_timer(2, get_game().contestant_finish_message.hide)
 

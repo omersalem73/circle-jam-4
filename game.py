@@ -57,10 +57,14 @@ class Game(arcade.Window, CallbacksRegisterer):
             )
         ])
         self._questions_stages = QuestionsStages()
-        self._current_contestant = Contestant()
         self._background_controller = BackgroundController()
+        self._current_contestant = Contestant()
 
         self._questions_pool.show()
+
+    def next_contestant(self):
+        self._current_contestant = Contestant()
+        self._questions_stages.reset()
 
     @property
     def audience_share(self) -> AudienceShare:
@@ -104,6 +108,12 @@ class Game(arcade.Window, CallbacksRegisterer):
     def unpause_gameplay(self):
         self._is_gameplay_paused = False
 
+    def player_won(self):
+        self.pause_gameplay()
+
+    def player_lost(self):
+        self.pause_gameplay()
+
     def on_update(self, delta_time: float):
         for timer in timers[:]:
             timer.tick(delta_time)
@@ -115,6 +125,10 @@ class Game(arcade.Window, CallbacksRegisterer):
             self._on_screen_question_data = new_selected_question
             if new_selected_question:
                 self._on_screen_question.update_data(new_selected_question)
+
+        if self._is_gameplay_paused:
+            return
+        CallbacksRegisterer.on_update(self, delta_time)
 
     def on_draw(self):
         arcade.start_render()

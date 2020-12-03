@@ -2,6 +2,7 @@ class CallbacksRegisterer:
 
     def __init__(self):
         self._callbacks = {
+            'on_update': [],
             'on_draw': [],
             'on_mouse_press': [],
             'on_mouse_motion': []
@@ -9,6 +10,10 @@ class CallbacksRegisterer:
 
     def register(self, name, callback):
         self._callbacks[name].append(callback)
+
+    def on_update(self, dt):
+        for callback in self._callbacks['on_update']:
+            callback(dt)
 
     def on_draw(self):
         for callback in self._callbacks['on_draw']:

@@ -77,6 +77,10 @@ class QuestionUI:
             self._answers_bgs[i] = self._right_answer_bg
         self._answer_labels[i].color = arcade.color.WHITE
 
+    def reset(self):
+        for i in range(4):
+            self.unselect(i)
+
     def on_draw(self):
         arcade.draw_texture_rectangle(SCREEN_WIDTH / 2, self._question_y, SCREEN_WIDTH, self._question_height,
                                       self._question_bg)
@@ -154,6 +158,7 @@ class Question:
     def reset_data(self):
         if self._correct_answer_index != -1:
             self._get_selected_answer().unselect()
+            self._ui.reset()
         self._correct_answer_index = -1
 
     def on_draw(self):
@@ -173,7 +178,7 @@ class Question:
         if self._get_selected_answer() == self.get_correct_answer():
             get_game().questions_stages.next_stage()
         else:
-            get_game().questions_stages.reset()
+            get_game().next_contestant()
 
     @sleep_before(2)
     def verify_answered_question(self):
