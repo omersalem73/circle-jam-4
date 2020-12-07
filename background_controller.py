@@ -1,5 +1,7 @@
 import arcade
 
+from globals import SCREEN_WIDTH, SCREEN_HEIGHT
+
 
 class BackgroundController:
 
@@ -9,10 +11,6 @@ class BackgroundController:
         self._select_question_bg = arcade.load_texture("images/3_pixel.png")
         self._show_question_bg = arcade.load_texture("images/4_pixel.png")
         self._current_bg = self._select_question_bg
-
-    @property
-    def current_bg(self):
-        return self._current_bg
 
     def show_host(self):
         self._current_bg = self._host_bg
@@ -25,3 +23,6 @@ class BackgroundController:
 
     def show_question(self):
         self._current_bg = self._show_question_bg
+
+    def on_draw(self):
+        arcade.draw_lrwh_rectangle_textured(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, self._current_bg)

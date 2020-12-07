@@ -15,7 +15,7 @@ class Contestant:
         }
         self._prize_to_quit_prob = {
             1000: 0.3,
-            32000: 0.7
+            32000: 0.5
         }
 
     def answer(self, question: Question):
@@ -27,7 +27,7 @@ class Contestant:
         else:
             choice(wrong_answers).select()
 
-    def consider_quitting(self):
+    def should_withdraw(self):
         questions_stages = get_game().questions_stages
         # at present only consider quitting if just hit the exit point, not afterwards
         if questions_stages.is_currently_on_exit_point():

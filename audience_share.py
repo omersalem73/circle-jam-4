@@ -1,6 +1,7 @@
+import arcade
 import typing
 
-from globals import get_game, SCREEN_WIDTH, SCREEN_HEIGHT
+from globals import get_game
 from label import Label
 from random import random
 
@@ -13,7 +14,9 @@ class AudienceShare:
 
     def __init__(self):
         self._share = type(self).START_SHARE
-        self._label = Label('', 0, 0)
+        self._last_share_diff = 0
+        self._label = Label('', 0, 0, font_size=20)
+        self._diff_label = Label('', 0, 0, font_size=20)
         self.update()
         get_game().register('on_draw', self.on_draw)
 
@@ -23,15 +26,32 @@ class AudienceShare:
             QuestionDifficulty.AVERAGE: (20, 5),
             QuestionDifficulty.HARD: (30, 20)
         }[question_difficulty]
-        self._share += (random() * probable_change) - possible_shift
+        self._last_share_diff = (random() * probable_change) - possible_shift
+        self._update_diff_lbl(self._last_share_diff)
+        self._share += self._last_share_diff
 
         if self._share > 100:
             self._share = 100
 
-    def _share_as_str(self):
-        as_str = str(self._share)
-        # if as_str[1] == '.':
-        #     return as_str[:4] + '%'
+    def _update_diff_lbl(self, diff):
+        if diff == 0:
+            self._diff_label.text = ''
+            return
+
+        if diff > 0:
+            sign = '+'
+            self._diff_label.color = arcade.color.GREEN
+        else:
+            sign = '-'
+            self._diff_label.color = arcade.color.RED
+
+        self._diff_label.text = '({}{})'.format(sign, AudienceShare._share_as_str(diff))
+
+    @staticmethod
+    def _share_as_str(share):
+        as_str = str(share)
+        if as_str[1] == '.':
+            return as_str[:4] + '%'
         return as_str[:5] + '%'
 
     def update(self, question_answered: typing.Optional[QuestionData] = None):
@@ -39,11 +59,19 @@ class AudienceShare:
             self._share = type(self).START_SHARE
         else:
             self._calc_share(question_answered.difficulty)
-        self._label.text = 'Audience Share: {}'.format(self._share_as_str())
+        self._label.text = 'Rating: {}'.format(AudienceShare._share_as_str(self._share))
         w, h = self._label.get_size()
         self._label.x = 10
-        self._label.y = SCREEN_HEIGHT - 80
-        get_game().budget.update()
+        self._label.y = get_game().budget.ui.get_y() - self._label.get_size()[1] - 5
+        self._diff_label.x = self._label.x + self._label.get_size()[0] + 10
+        self._diff_label.y = self._label.y
+        get_game().budget.add_amount(int(self._last_share_diff * 10000))
 
     def on_draw(self):
+        w_sum = self._label.get_size()[0]
+        if len(self._diff_label.text) > 0:
+            w_sum += 10 + self._diff_label.get_size()[0]
+        arcade.draw_xywh_rectangle_filled(self._label.x - 2, self._label.y - 2, w_sum + 4,
+                                          self._label.get_size()[1] + 4, (0, 0, 0, 200))
         self._label.on_draw()
+        self._diff_label.on_draw()
