@@ -2,21 +2,26 @@ from random import random, choice
 
 from globals import get_game
 from question import Question
-from question_data import QuestionDifficulty
 
 
 class Contestant:
 
-    def __init__(self):
-        self._answer_prob = {
-            QuestionDifficulty.HARD: 0.3,
-            QuestionDifficulty.AVERAGE: 0.7,
-            QuestionDifficulty.EASY: 0.86
-        }
-        self._prize_to_quit_prob = {
-            1000: 0.3,
-            32000: 0.5
-        }
+    def __init__(self, name, answer_prob, prize_to_quit_prob):
+        self._name = name
+        self._answer_prob = answer_prob
+        self._prize_to_quit_prob = prize_to_quit_prob
+
+    @property
+    def name(self):
+        return self._name
+
+    @property
+    def answer_prob(self):
+        return self._answer_prob
+
+    @property
+    def prize_to_quit_prob(self):
+        return self._prize_to_quit_prob
 
     def answer(self, question: Question):
         correct_answer = question.get_correct_answer()
