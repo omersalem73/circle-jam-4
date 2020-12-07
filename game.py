@@ -4,6 +4,7 @@ import arcade
 
 from contestant_finish_message import ContestantFinishMessage
 from globals import timers, SCREEN_WIDTH, SCREEN_HEIGHT, add_timer
+from questions_data import questions_data
 from ui_base import CallbacksRegisterer
 from question import Question, QuestionUI
 from question_data import QuestionData, QuestionDifficulty
@@ -20,7 +21,7 @@ class Game(arcade.Window, CallbacksRegisterer):
 
     POSSIBLE_CONTESTANTS = [
         Contestant(
-            'Yogev',
+            'Daniyal Mcgregor',
             answer_prob={
                 QuestionDifficulty.HARD: 0.3,
                 QuestionDifficulty.AVERAGE: 0.7,
@@ -32,7 +33,7 @@ class Game(arcade.Window, CallbacksRegisterer):
             }
         ),
         Contestant(
-            'Gam Yogev',
+            'Susan Cardenas',
             answer_prob={
                 QuestionDifficulty.HARD: 0.5,
                 QuestionDifficulty.AVERAGE: 0.8,
@@ -41,6 +42,42 @@ class Game(arcade.Window, CallbacksRegisterer):
             prize_to_quit_prob={
                 1000: 0.1,
                 32000: 0.6
+            }
+        ),
+        Contestant(
+            'Theo Paul',
+            answer_prob={
+                QuestionDifficulty.HARD: 0.1,
+                QuestionDifficulty.AVERAGE: 0.8,
+                QuestionDifficulty.EASY: 0.6
+            },
+            prize_to_quit_prob={
+                1000: 0.6,
+                32000: 0.8
+            }
+        ),
+        Contestant(
+            'Lynda Fowler',
+            answer_prob={
+                QuestionDifficulty.HARD: 0.35,
+                QuestionDifficulty.AVERAGE: 0.7,
+                QuestionDifficulty.EASY: 0.9
+            },
+            prize_to_quit_prob={
+                1000: 0.7,
+                32000: 0.9
+            }
+        ),
+        Contestant(
+            'Antonio Kenny',
+            answer_prob={
+                QuestionDifficulty.HARD: 0.65,
+                QuestionDifficulty.AVERAGE: 0.8,
+                QuestionDifficulty.EASY: 0.9
+            },
+            prize_to_quit_prob={
+                1000: 0.3,
+                32000: 0.4
             }
         )
     ]
@@ -67,26 +104,7 @@ class Game(arcade.Window, CallbacksRegisterer):
         self._audience_share = AudienceShare()
         self._contestant_finish_message = ContestantFinishMessage()
         self._on_screen_question = Question()
-        self._questions_pool = QuestionsPool(*[
-            QuestionData(
-                'Who has the biggest?',
-                'Shoded',
-                ['Omer', 'Omri', 'Gonen'],
-                QuestionDifficulty.EASY
-            ),
-            QuestionData(
-                'Who has the longest?',
-                'Omer',
-                ['Shoded', 'Omri', 'Gonen'],
-                QuestionDifficulty.AVERAGE
-            ),
-            QuestionData(
-                'Who has the hardest?',
-                'Omer',
-                ['Shoded', 'Omri', 'Gonen'],
-                QuestionDifficulty.HARD
-            )
-        ])
+        self._questions_pool = QuestionsPool(*questions_data)
         self._questions_stages = QuestionsStages()
         self._background_controller = BackgroundController()
         self._current_contestant = random.choice(type(self).POSSIBLE_CONTESTANTS)

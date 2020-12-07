@@ -1,14 +1,13 @@
-import arcade
-
+import random
 from globals import SCREEN_WIDTH, get_game, sleep_before, add_timer
-from ui_base import VisibilityToggle, is_point_in_rect
+from ui_base import VisibilityToggle
 from label import Label
 from button import Button
 
 
 class QuestionsPool(VisibilityToggle):
 
-    def __init__(self, easy_question, average_question, hard_question):
+    def __init__(self, easy_questions, average_questions, hard_questions):
         super().__init__(is_visible=False)
         self._show_highlight = False
         self._highlighted_index = 0
@@ -27,7 +26,7 @@ class QuestionsPool(VisibilityToggle):
         average_question_label.x = easy_question_label.x + easy_question_label.get_size()[0] + 25
         hard_question_label.x = average_question_label.x + average_question_label.get_size()[0] + 25
 
-        self._questions = [easy_question, average_question, hard_question]
+        self._questions = [easy_questions, average_questions, hard_questions]
         self._buttons = [easy_question_label, average_question_label, hard_question_label]
 
         get_game().register('on_draw', self.on_draw)
@@ -66,7 +65,7 @@ class QuestionsPool(VisibilityToggle):
 
     @sleep_before(0.1)
     def _show_selected_answer(self, index):
-        self._selected_question = self._questions[index]
+        self._selected_question = random.choice(self._questions[index])
         self.hide()
         get_game().background_controller.show_host()
         get_game().questions_stages.hide()
