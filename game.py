@@ -1,7 +1,9 @@
+import random
+
 import arcade
 
 from contestant_finish_message import ContestantFinishMessage
-from globals import timers, SCREEN_WIDTH, SCREEN_HEIGHT
+from globals import timers, SCREEN_WIDTH, SCREEN_HEIGHT, add_timer
 from ui_base import CallbacksRegisterer
 from question import Question, QuestionUI
 from question_data import QuestionData, QuestionDifficulty
@@ -15,6 +17,33 @@ from popup_msg import PopupMessage
 
 
 class Game(arcade.Window, CallbacksRegisterer):
+
+    POSSIBLE_CONTESTANTS = [
+        Contestant(
+            'Yogev',
+            answer_prob={
+                QuestionDifficulty.HARD: 0.3,
+                QuestionDifficulty.AVERAGE: 0.7,
+                QuestionDifficulty.EASY: 0.86
+            },
+            prize_to_quit_prob={
+                1000: 0.3,
+                32000: 0.7
+            }
+        ),
+        Contestant(
+            'Gam Yogev',
+            answer_prob={
+                QuestionDifficulty.HARD: 0.5,
+                QuestionDifficulty.AVERAGE: 0.8,
+                QuestionDifficulty.EASY: 0.9
+            },
+            prize_to_quit_prob={
+                1000: 0.1,
+                32000: 0.6
+            }
+        )
+    ]
 
     def __init__(self):
         arcade.Window.__init__(self, SCREEN_WIDTH, SCREEN_HEIGHT, fullscreen=False)
@@ -41,8 +70,8 @@ class Game(arcade.Window, CallbacksRegisterer):
         self._questions_pool = QuestionsPool(*[
             QuestionData(
                 'Who has the biggest?',
-                'Omer',
-                ['Shoded', 'Omri', 'Gonen'],
+                'Shoded',
+                ['Omer', 'Omri', 'Gonen'],
                 QuestionDifficulty.EASY
             ),
             QuestionData(
@@ -60,14 +89,14 @@ class Game(arcade.Window, CallbacksRegisterer):
         ])
         self._questions_stages = QuestionsStages()
         self._background_controller = BackgroundController()
-        self._current_contestant = Contestant()
+        self._current_contestant = random.choice(type(self).POSSIBLE_CONTESTANTS)
         self._popup_message = PopupMessage()
-
         self._popup_message.show()
 
     def next_contestant(self):
-        self._current_contestant = Contestant()
+        self._current_contestant = random.choice(type(self).POSSIBLE_CONTESTANTS)
         self._questions_stages.reset()
+        add_timer(3, self._popup_message.show)
 
     @property
     def audience_share(self) -> AudienceShare:

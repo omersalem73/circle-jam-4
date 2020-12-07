@@ -180,7 +180,7 @@ class Question:
         else:
             get_game().next_contestant()
 
-    @sleep_before(2)
+    @sleep_before(4)
     def verify_answered_question(self):
         correct = self.get_correct_answer()
         correct.mark_as_correct(self._next_stage_or_contestant)

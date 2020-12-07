@@ -22,6 +22,8 @@ class Stage:
 STAGES = [Stage(1000), Stage(8000), Stage(16000), Stage(32000, StageType.EXIT_POINT),
           Stage(125000), Stage(500000), Stage(1000000, StageType.EXIT_POINT)]
 
+SHOW_COST = 70000
+
 
 class QuestionsStages(VisibilityToggle):
 
@@ -67,6 +69,7 @@ class QuestionsStages(VisibilityToggle):
         self._current_stage_index = 0
         get_game().on_screen_question.reset_data()
         get_game().audience_share.update()
+        get_game().budget.lose_amount(SHOW_COST)
         add_timer(0.5, get_game().question_pool.show)
         self.show()
 
