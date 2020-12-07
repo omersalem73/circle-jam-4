@@ -7,9 +7,19 @@ class CallbacksRegisterer:
             'on_mouse_press': [],
             'on_mouse_motion': []
         }
+        self._buttons = []
 
     def register(self, name, callback):
         self._callbacks[name].append(callback)
+
+    def disable_all_buttons(self):
+        for btn in self._buttons:
+            btn.disable()
+
+    def register_button_mouse_events(self, btn):
+        self.register('on_mouse_motion', btn.on_mouse_motion)
+        self.register('on_mouse_press', btn.on_mouse_press)
+        self._buttons.append(btn)
 
     def on_update(self, dt):
         for callback in self._callbacks['on_update']:

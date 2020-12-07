@@ -59,7 +59,7 @@ class AudienceShare:
             self._share = type(self).START_SHARE
         else:
             self._calc_share(question_answered.difficulty)
-        self._label.text = 'Ratings: {}'.format(AudienceShare._share_as_str(self._share))
+        self._label.text = 'Rating: {}'.format(AudienceShare._share_as_str(self._share))
         w, h = self._label.get_size()
         self._label.x = 10
         self._label.y = get_game().budget.ui.get_y() - self._label.get_size()[1] - 5

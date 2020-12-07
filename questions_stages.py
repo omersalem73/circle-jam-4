@@ -74,17 +74,18 @@ class QuestionsStages(VisibilityToggle):
     def next_stage(self):
         get_game().background_controller.show_select_question()
         if self._current_stage_index == len(self._stages):
-            # TODO: future - choose new contestant?
+            # Player won - next contestant
             self.reset()
         else:
             self._current_stage_index += 1
             prev_question = get_game().on_screen_question.question_data
             get_game().on_screen_question.reset_data()
             get_game().audience_share.update(prev_question)
-            if get_game().current_contestant.consider_quitting():
+            if get_game().current_contestant.should_withdraw():
+                # Player withdrawn - next contestant
                 self.reset()
             self.show()
-            add_timer(0.5, get_game().question_pool.show)
+            get_game().question_pool.show()
 
     def draw_if_visible(self):
         if self._current_stage_index > 0 and STAGES[self._current_stage_index - 1].stage_type is StageType.NORMAL:

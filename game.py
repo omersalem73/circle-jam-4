@@ -11,6 +11,7 @@ from questions_stages import QuestionsStages
 from audience_share import AudienceShare
 from budget import Budget
 from background_controller import BackgroundController
+from popup_msg import PopupMessage
 
 
 class Game(arcade.Window, CallbacksRegisterer):
@@ -30,6 +31,7 @@ class Game(arcade.Window, CallbacksRegisterer):
         self._budget = None
         self._contestant_finish_message = None
         self._background_controller = None
+        self._popup_message = None
 
     def init(self):
         self._budget = Budget()
@@ -59,8 +61,9 @@ class Game(arcade.Window, CallbacksRegisterer):
         self._questions_stages = QuestionsStages()
         self._background_controller = BackgroundController()
         self._current_contestant = Contestant()
+        self._popup_message = PopupMessage()
 
-        self._questions_pool.show()
+        self._popup_message.show()
 
     def next_contestant(self):
         self._current_contestant = Contestant()
