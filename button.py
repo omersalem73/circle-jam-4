@@ -17,6 +17,7 @@ class Button(Label):
 
     def disable(self):
         self._is_enabled = False
+        self._is_hovering = False
 
     def on_draw(self):
         if self._is_hovering:

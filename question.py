@@ -174,16 +174,13 @@ class Question:
     def _get_selected_answer(self):
         return [ans for ans in self._answers if ans.is_selected][0]
 
-    def _next_stage_or_contestant(self):
-        if self._get_selected_answer() == self.get_correct_answer():
-            get_game().questions_stages.next_stage()
-        else:
-            get_game().next_contestant()
+    def is_selected_answer_correct(self):
+        return self._get_selected_answer() == self.get_correct_answer()
 
     @sleep_before(2)
     def verify_answered_question(self):
         correct = self.get_correct_answer()
-        correct.mark_as_correct(self._next_stage_or_contestant)
+        correct.mark_as_correct(get_game().next_stage_or_new_contestant)
 
     @property
     def question_data(self) -> QuestionData:

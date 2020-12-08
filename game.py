@@ -1,6 +1,5 @@
 import arcade
 
-from contestant_finish_message import ContestantFinishMessage
 from globals import timers, SCREEN_WIDTH, SCREEN_HEIGHT
 from ui_base import CallbacksRegisterer
 from question import Question, QuestionUI
@@ -11,7 +10,7 @@ from questions_stages import QuestionsStages
 from audience_share import AudienceShare
 from budget import Budget
 from background_controller import BackgroundController
-from popup_msg import PopupMessage
+from popup_msg import PopupMessage, NEW_CONTESTANT_TEXT
 
 
 class Game(arcade.Window, CallbacksRegisterer):
@@ -36,7 +35,6 @@ class Game(arcade.Window, CallbacksRegisterer):
     def init(self):
         self._budget = Budget()
         self._audience_share = AudienceShare()
-        self._contestant_finish_message = ContestantFinishMessage()
         self._on_screen_question = Question()
         self._questions_pool = QuestionsPool(*[
             QuestionData(
@@ -63,11 +61,20 @@ class Game(arcade.Window, CallbacksRegisterer):
         self._current_contestant = Contestant()
         self._popup_message = PopupMessage()
 
-        self._popup_message.show()
+        self._popup_message.show(on_continue_callback=lambda: self.question_pool.show())
 
     def next_contestant(self):
+        self.background_controller.show_select_question()
         self._current_contestant = Contestant()
-        self._questions_stages.reset()
+        self.questions_stages.reset()
+        self.on_screen_question.reset_data()
+
+        self.audience_share.update()
+        self.question_pool.show()
+        self.questions_stages.show()
+
+        self._popup_message.set_text(NEW_CONTESTANT_TEXT)
+        self._popup_message.show(on_continue_callback=lambda: self.question_pool.show())
 
     @property
     def audience_share(self) -> AudienceShare:
@@ -76,10 +83,6 @@ class Game(arcade.Window, CallbacksRegisterer):
     @property
     def budget(self) -> Budget:
         return self._budget
-
-    @property
-    def contestant_finish_message(self) -> ContestantFinishMessage:
-        return self._contestant_finish_message
 
     @property
     def current_contestant(self) -> Contestant:
@@ -104,6 +107,22 @@ class Game(arcade.Window, CallbacksRegisterer):
     @property
     def background_controller(self) -> BackgroundController:
         return self._background_controller
+
+    def next_stage_or_new_contestant(self):
+        if self.on_screen_question.is_selected_answer_correct():
+            if self.questions_stages.is_current_question_last():
+                self._popup_message.set_text('Contestant Won $1000000!')
+                self.budget.lose_amount(1000000)
+            elif self.current_contestant.should_withdraw():
+                exit_money = self.questions_stages.get_current_exit_money()
+                self._popup_message.set_text('Contestant Withdrawn with ${}!'.format(exit_money))
+                self.budget.lose_amount(exit_money)
+            else:
+                self.questions_stages.next_stage()
+                return
+        else:
+            self._popup_message.set_text('Contestant Lost!')
+        self._popup_message.show(on_continue_callback=lambda: self.next_contestant())
 
     def pause_gameplay(self):
         self._is_gameplay_paused = True
