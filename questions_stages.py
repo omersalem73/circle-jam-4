@@ -4,6 +4,8 @@ from globals import get_game, sleep_before, SCREEN_WIDTH, SCREEN_HEIGHT
 from label import Label
 from ui_base import VisibilityToggle
 
+SHOW_COST_PER_STAGE = 7000
+
 
 class Stage:
     def __init__(self, money, is_exit_point=False):
@@ -14,8 +16,6 @@ class Stage:
 
 STAGES = [Stage(1000), Stage(8000), Stage(16000, True), Stage(32000),
           Stage(125000, True), Stage(500000), Stage(1000000, True)]
-
-SHOW_COST = 70000
 
 
 class QuestionsStages(VisibilityToggle):
@@ -63,6 +63,7 @@ class QuestionsStages(VisibilityToggle):
         prev_question = get_game().on_screen_question.question_data
         get_game().on_screen_question.reset_data()
         get_game().audience_share.update(prev_question)
+        get_game().budget.lose_amount(SHOW_COST_PER_STAGE)
         self.show()
         get_game().question_pool.show()
 

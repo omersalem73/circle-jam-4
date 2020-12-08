@@ -2,18 +2,18 @@ import random
 
 import arcade
 
-from globals import timers, SCREEN_WIDTH, SCREEN_HEIGHT, add_timer
+from globals import timers, SCREEN_WIDTH, SCREEN_HEIGHT, sleep_before
 from questions_data import questions_data
 from ui_base import CallbacksRegisterer
 from question import Question, QuestionUI
-from question_data import QuestionData, QuestionDifficulty
+from question_data import QuestionDifficulty
 from question_pool import QuestionsPool
 from contestant import Contestant
 from questions_stages import QuestionsStages
 from audience_share import AudienceShare
 from budget import Budget
 from background_controller import BackgroundController
-from popup_msg import PopupMessage, NEW_CONTESTANT_TEXT
+from popup_msg import PopupMessage
 
 
 class Game(arcade.Window, CallbacksRegisterer):
@@ -109,6 +109,7 @@ class Game(arcade.Window, CallbacksRegisterer):
         self._popup_message = PopupMessage()
         self._popup_message.show(on_continue_callback=lambda: self.question_pool.show())
 
+    @sleep_before(1)
     def next_contestant(self):
         self.background_controller.show_select_question()
         self._current_contestant = random.choice(type(self).POSSIBLE_CONTESTANTS)
@@ -119,7 +120,7 @@ class Game(arcade.Window, CallbacksRegisterer):
         self.question_pool.show()
         self.questions_stages.show()
 
-        self._popup_message.set_text(NEW_CONTESTANT_TEXT)
+        self._popup_message.set_text(PopupMessage.format_msg())
         self._popup_message.show(on_continue_callback=lambda: self.question_pool.show())
 
     @property
