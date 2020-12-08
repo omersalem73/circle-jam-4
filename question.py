@@ -177,7 +177,7 @@ class Question:
     def is_selected_answer_correct(self):
         return self._get_selected_answer() == self.get_correct_answer()
 
-    @sleep_before(2)
+    @sleep_before(4)
     def verify_answered_question(self):
         correct = self.get_correct_answer()
         correct.mark_as_correct(get_game().next_stage_or_new_contestant)

@@ -15,6 +15,8 @@ class Stage:
 STAGES = [Stage(1000), Stage(8000), Stage(16000, True), Stage(32000),
           Stage(125000, True), Stage(500000), Stage(1000000, True)]
 
+SHOW_COST = 70000
+
 
 class QuestionsStages(VisibilityToggle):
 

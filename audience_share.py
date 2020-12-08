@@ -23,8 +23,8 @@ class AudienceShare:
     def _calc_share(self, question_difficulty: QuestionDifficulty):
         probable_change, possible_shift = {
             QuestionDifficulty.EASY: (10, 5),
-            QuestionDifficulty.AVERAGE: (20, 5),
-            QuestionDifficulty.HARD: (30, 20)
+            QuestionDifficulty.AVERAGE: (20, 3),
+            QuestionDifficulty.HARD: (30, 5)
         }[question_difficulty]
         self._last_share_diff = (random() * probable_change) - possible_shift
 
