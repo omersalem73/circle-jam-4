@@ -18,6 +18,8 @@ from popup_msg import PopupMessage
 
 class Game(arcade.Window, CallbacksRegisterer):
 
+    BASE_SHOW_COST = 50000
+
     POSSIBLE_CONTESTANTS = [
         Contestant(
             'Daniyal Mcgregor',
@@ -27,8 +29,8 @@ class Game(arcade.Window, CallbacksRegisterer):
                 QuestionDifficulty.EASY: 0.86
             },
             prize_to_quit_prob={
-                1000: 0.3,
-                32000: 0.7
+                16000: 0.3,
+                125000: 0.7
             }
         ),
         Contestant(
@@ -39,8 +41,8 @@ class Game(arcade.Window, CallbacksRegisterer):
                 QuestionDifficulty.EASY: 0.9
             },
             prize_to_quit_prob={
-                1000: 0.1,
-                32000: 0.6
+                16000: 0.1,
+                125000: 0.6
             }
         ),
         Contestant(
@@ -51,8 +53,8 @@ class Game(arcade.Window, CallbacksRegisterer):
                 QuestionDifficulty.EASY: 0.6
             },
             prize_to_quit_prob={
-                1000: 0.6,
-                32000: 0.8
+                16000: 0.6,
+                125000: 0.8
             }
         ),
         Contestant(
@@ -63,8 +65,8 @@ class Game(arcade.Window, CallbacksRegisterer):
                 QuestionDifficulty.EASY: 0.9
             },
             prize_to_quit_prob={
-                1000: 0.7,
-                32000: 0.9
+                16000: 0.7,
+                125000: 0.9
             }
         ),
         Contestant(
@@ -75,8 +77,8 @@ class Game(arcade.Window, CallbacksRegisterer):
                 QuestionDifficulty.EASY: 0.9
             },
             prize_to_quit_prob={
-                1000: 0.3,
-                32000: 0.4
+                16000: 0.3,
+                125000: 0.4
             }
         )
     ]
@@ -107,7 +109,11 @@ class Game(arcade.Window, CallbacksRegisterer):
         self._background_controller = BackgroundController()
         self._current_contestant = random.choice(type(self).POSSIBLE_CONTESTANTS)
         self._popup_message = PopupMessage()
-        self._popup_message.show(on_continue_callback=lambda: self.question_pool.show())
+        self._popup_message.show(on_continue_callback=self._popup_next_contestant_callback)
+
+    def _popup_next_contestant_callback(self):
+        self.budget.lose_amount(type(self).BASE_SHOW_COST)
+        self.question_pool.show()
 
     @sleep_before(1)
     def next_contestant(self):
@@ -121,7 +127,7 @@ class Game(arcade.Window, CallbacksRegisterer):
         self.questions_stages.show()
 
         self._popup_message.set_text(PopupMessage.format_msg())
-        self._popup_message.show(on_continue_callback=lambda: self.question_pool.show())
+        self._popup_message.show(on_continue_callback=self._popup_next_contestant_callback)
 
     @property
     def audience_share(self) -> AudienceShare:
