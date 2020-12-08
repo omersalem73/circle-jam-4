@@ -3,6 +3,24 @@ from question_data import QuestionData, QuestionDifficulty
 questions_data = (
     [
         QuestionData(
+            'Name the world’s largest ocean',
+            'Pacific',
+            ['Atlantic', 'Indian', 'Arctic'],
+            QuestionDifficulty.EASY
+        ),
+        QuestionData(
+            'What language has the most words?',
+            'English',
+            ['Russian', 'German', 'Ethiopian'],
+            QuestionDifficulty.EASY
+        ),
+        QuestionData(
+            'Which country invented tea?',
+            'China',
+            ['Japan', 'India', 'Britain'],
+            QuestionDifficulty.EASY
+        ),
+        QuestionData(
             'Which country consumes the most chocolate per capita?',
             'Switzerland',
             ['USA', 'Germany', 'Israel'],
@@ -22,6 +40,12 @@ questions_data = (
         ),
     ],
     [
+        QuestionData(
+            'Which of the following languages does NOT use gender as a part of its grammar?',
+            'Turkish',
+            ['English', 'Tamil', 'Arabic'],
+            QuestionDifficulty.AVERAGE
+        ),
         QuestionData(
             'What is the rarest M&M color?',
             'Brown',
@@ -49,6 +73,24 @@ questions_data = (
     ],
     [
         QuestionData(
+            'Which planet has the most gravity?',
+            'Jupiter',
+            ['Earth', 'Saturn', 'Mars'],
+            QuestionDifficulty.HARD
+        ),
+        QuestionData(
+            'How many bones do sharks have in their bodies?',
+            'None',
+            ['One', 'Fifty', 'Ten'],
+            QuestionDifficulty.HARD
+        ),
+        QuestionData(
+            'What did Queen Anne die of?',
+            'Stroke',
+            ['Heart attack', 'Diabetes', 'Hemophilia'],
+            QuestionDifficulty.HARD
+        ),
+        QuestionData(
             'What character was once considered to be the 27th letter of the alphabet?',
             'Ampersand',
             ['Asterisk', 'Question mark', 'Exclamation mark'],
@@ -72,5 +114,17 @@ questions_data = (
             ['Sarin', 'Strychnine', 'Cyanide'],
             QuestionDifficulty.HARD
         ),
+        QuestionData(
+            'Nephelococcygia is the practice of doing what?',
+            'Finding shapes in clouds',
+            ['Drinking beer to death', 'Eating ice cream', 'Phobia of horror movies'],
+            QuestionDifficulty.HARD
+        ),
+        QuestionData(
+            'What is cloud-cuckoo-land?',
+            'A silly people place',
+            ['A StarWars city', 'A sweets store', 'A forecasting service'],
+            QuestionDifficulty.HARD
+        )
     ]
 )

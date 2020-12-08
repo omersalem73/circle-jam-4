@@ -68,7 +68,7 @@ class AudienceShare:
         self._label.y = get_game().budget.ui.get_y() - self._label.get_size()[1] - 5
         self._diff_label.x = self._label.x + self._label.get_size()[0] + 10
         self._diff_label.y = self._label.y
-        get_game().budget.add_amount(int(self._last_share_diff * 10000))
+        get_game().budget.add_amount(int(self._last_share_diff * 5000))
 
     def on_draw(self):
         w_sum = self._label.get_size()[0]
