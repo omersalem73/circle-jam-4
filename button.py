@@ -30,5 +30,5 @@ class Button(Label):
             self._is_hovering = is_point_in_rect(x, y, self.x, self.y, self.get_size()[0], self.get_size()[1])
 
     def on_mouse_press(self,  _x, _y, button, _modifiers):
-        if self._is_enabled and  (button == arcade.MOUSE_BUTTON_LEFT) and self._is_hovering:
+        if self._is_enabled and (button == arcade.MOUSE_BUTTON_LEFT) and self._is_hovering:
             self._on_click_callback()
