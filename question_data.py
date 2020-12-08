@@ -12,7 +12,7 @@ class QuestionData:
 
     def __init__(self, text: str, correct_answer: str, three_wrong_answers: typing.List[str],
                  difficulty: QuestionDifficulty):
-        self._text = f'{text} ({difficulty.value})'
+        self._text = text
         self._correct_answer = correct_answer
         self._three_wrong_answers = three_wrong_answers
         self._difficulty = difficulty

@@ -5,6 +5,8 @@ from question_data import QuestionData
 from label import Label
 from random import randint
 
+from text_box import TextBox
+
 
 class QuestionUI:
 
@@ -19,7 +21,7 @@ class QuestionUI:
         self._right_answer_bg = arcade.load_texture("images/answer_right.png")
         self._right_answer_selected_bg = arcade.load_texture("images/answer_right_selected.png")
         self._right_answer_correct_bg = arcade.load_texture("images/answer_right_correct.png")
-        self._question_label = Label('', 0, 0)
+        self._question_label = TextBox('', SCREEN_WIDTH * 0.7, 0, 0, font_size=26, is_center_aligned=True)
         self._answer_labels = [Label('', 0, 0) for _ in range(4)]
 
         self._question_ratio = self._question_bg.width / self._question_bg.height
@@ -42,7 +44,7 @@ class QuestionUI:
     def set_texts(self, question, answers):
         self._question_label.text = question
         self._question_label.x = SCREEN_WIDTH / 2 - self._question_label.get_size()[0] / 2
-        self._question_label.y = self._question_y - self._question_label.get_size()[1] / 2
+        self._question_label.y = self._question_y + self._question_label.get_size()[1] / 2
         letters = ['A', 'B', 'C', 'D']
         for i, answer in enumerate(answers):
             lbl = self._answer_labels[i]
@@ -174,16 +176,13 @@ class Question:
     def _get_selected_answer(self):
         return [ans for ans in self._answers if ans.is_selected][0]
 
-    def _next_stage_or_contestant(self):
-        if self._get_selected_answer() == self.get_correct_answer():
-            get_game().questions_stages.next_stage()
-        else:
-            get_game().next_contestant()
+    def is_selected_answer_correct(self):
+        return self._get_selected_answer() == self.get_correct_answer()
 
     @sleep_before(4)
     def verify_answered_question(self):
         correct = self.get_correct_answer()
-        correct.mark_as_correct(self._next_stage_or_contestant)
+        correct.mark_as_correct(get_game().next_stage_or_new_contestant)
 
     @property
     def question_data(self) -> QuestionData:

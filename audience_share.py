@@ -27,6 +27,10 @@ class AudienceShare:
             QuestionDifficulty.HARD: (30, 5)
         }[question_difficulty]
         self._last_share_diff = (random() * probable_change) - possible_shift
+
+        if self._last_share_diff + self._share < 0:
+            self._last_share_diff = -self._share
+
         self._update_diff_lbl(self._last_share_diff)
         self._share += self._last_share_diff
 
@@ -60,7 +64,6 @@ class AudienceShare:
         else:
             self._calc_share(question_answered.difficulty)
         self._label.text = 'Rating: {}'.format(AudienceShare._share_as_str(self._share))
-        w, h = self._label.get_size()
         self._label.x = 10
         self._label.y = get_game().budget.ui.get_y() - self._label.get_size()[1] - 5
         self._diff_label.x = self._label.x + self._label.get_size()[0] + 10

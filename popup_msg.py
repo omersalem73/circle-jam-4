@@ -7,13 +7,19 @@ from text_box import TextBox
 from button import Button
 
 BORDER = 3
+NEW_CONTESTANT_TEXT = '-- New Contestant --\nName: Omer Salem\nChance of answering easy questions: 0.5\nChance of ' \
+                      'answering average questions: 0.5\nChance of answering hard questions: 0.5\nChance of ' \
+                      'contestant withdrawal: 0.5\n\nTotal profit +/- this round: +30000\nTotal rating +/- this ' \
+                      'round: +2.75 '
 
 
 class PopupMessage(VisibilityToggle):
 
     def __init__(self):
         super().__init__(is_visible=True)
-        self._text_box = TextBox(self.format_msg(), SCREEN_WIDTH / 2 - 20, SCREEN_WIDTH / 4 + 10, SCREEN_HEIGHT * 0.75 - 10)
+        self._text_box = TextBox(self.format_msg(), SCREEN_WIDTH / 2 - 20,
+                                 SCREEN_WIDTH / 4 + 10, SCREEN_HEIGHT * 0.75 - 10)
+        self._on_continue_callback = None
         self._continue_btn = Button('Continue', 0, SCREEN_HEIGHT / 4 + 10, lambda: self._on_click_continue())
         self._continue_btn.x = SCREEN_WIDTH * 0.75 - self._continue_btn.get_size()[0] - 20
         get_game().register('on_draw', self.on_draw)
@@ -35,15 +41,19 @@ class PopupMessage(VisibilityToggle):
 
     def _on_click_continue(self):
         self.hide()
-        get_game().question_pool.show()
+        if self._on_continue_callback:
+            self._on_continue_callback()
 
-    def show(self):
+    def set_text(self, text):
+        self._text_box.text = text
+
+    def show(self, on_continue_callback=None):
         super().show()
+        self._on_continue_callback = on_continue_callback
         get_game().disable_all_buttons()
         self._continue_btn.enable()
 
     def draw_if_visible(self):
-        self._text_box.text = self.format_msg()
         arcade.draw_xywh_rectangle_filled(SCREEN_WIDTH / 4 - BORDER, SCREEN_HEIGHT / 4 - BORDER, BORDER,
                                           SCREEN_HEIGHT / 2 + BORDER, arcade.color.LIGHT_SKY_BLUE)
         arcade.draw_xywh_rectangle_filled(SCREEN_WIDTH / 4 - BORDER, SCREEN_HEIGHT / 4 - BORDER,
