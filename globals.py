@@ -23,8 +23,10 @@ def init_game():
     get_game().init()
 
 
-def add_timer(seconds, callback):
-    timers.append(Timer(seconds, callback))
+def add_timer(seconds, callback) -> Timer:
+    timer = Timer(seconds, callback)
+    timers.append(timer)
+    return timer
 
 
 def sleep_before(seconds):

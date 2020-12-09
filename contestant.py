@@ -36,6 +36,6 @@ class Contestant:
         questions_stages = get_game().questions_stages
         # at present only consider quitting if just hit the exit point, not afterwards
         if questions_stages.is_currently_on_exit_point():
-            if random() <= self._prize_to_quit_prob[questions_stages.get_current_exit_money()]:
+            if random() <= self._prize_to_quit_prob[questions_stages.get_current_prize_money()]:
                 return True
         return False
