@@ -11,7 +11,7 @@ from question_pool import QuestionsPool
 from contestant import Contestant
 from questions_stages import QuestionsStages
 from audience_share import AudienceShare
-from budget import Budget
+from budget import Budget, WIN_BUDGET, LOSE_BUDGET
 from background_controller import BackgroundController
 from popup_msg import PopupMessage
 
@@ -49,12 +49,12 @@ class Game(arcade.Window, CallbacksRegisterer):
             'Theo Paul',
             answer_prob={
                 QuestionDifficulty.HARD: 0.1,
-                QuestionDifficulty.AVERAGE: 0.8,
-                QuestionDifficulty.EASY: 0.6
+                QuestionDifficulty.AVERAGE: 0.6,
+                QuestionDifficulty.EASY: 0.8
             },
             prize_to_quit_prob={
-                16000: 0.6,
-                125000: 0.8
+                16000: 0.0,
+                125000: 0.1
             }
         ),
         Contestant(
@@ -99,6 +99,7 @@ class Game(arcade.Window, CallbacksRegisterer):
         self._contestant_finish_message = None
         self._background_controller = None
         self._popup_message = None
+        self._game_ended = False
 
     def init(self):
         self._budget = Budget()
@@ -109,25 +110,34 @@ class Game(arcade.Window, CallbacksRegisterer):
         self._background_controller = BackgroundController()
         self._current_contestant = random.choice(type(self).POSSIBLE_CONTESTANTS)
         self._popup_message = PopupMessage()
+
+        self.question_pool.show()
         self._popup_message.show(on_continue_callback=self._popup_next_contestant_callback)
 
     def _popup_next_contestant_callback(self):
-        self.budget.lose_amount(type(self).BASE_SHOW_COST)
         self.question_pool.show()
 
     @sleep_before(1)
     def next_contestant(self):
+        self.budget.lose_amount(type(self).BASE_SHOW_COST)
+        self.audience_share.reset(diff_only=True)
         self.background_controller.show_select_question()
         self._current_contestant = random.choice(type(self).POSSIBLE_CONTESTANTS)
         self.questions_stages.reset()
         self.on_screen_question.reset_data()
 
-        self.audience_share.update()
-        self.question_pool.show()
         self.questions_stages.show()
+        self.question_pool.show()
 
-        self._popup_message.set_text(PopupMessage.format_msg())
+        self._popup_message.set_text(PopupMessage.new_contestant_message())
         self._popup_message.show(on_continue_callback=self._popup_next_contestant_callback)
+
+    @sleep_before(1)
+    def new_game(self):
+        self.budget.reset()
+        self.audience_share.reset()
+        self.next_contestant()
+        self._game_ended = False
 
     @property
     def audience_share(self) -> AudienceShare:
@@ -161,20 +171,34 @@ class Game(arcade.Window, CallbacksRegisterer):
     def background_controller(self) -> BackgroundController:
         return self._background_controller
 
+    def _check_if_player_lost_or_won(self):
+        if self.budget.get() == WIN_BUDGET:
+            self.player_won()
+            return True
+        elif self.budget.get() == LOSE_BUDGET:
+            self.player_lost()
+            return True
+        return False
+
     def next_stage_or_new_contestant(self):
+        self.audience_share.update(self.on_screen_question.question_data)
         if self.on_screen_question.is_selected_answer_correct():
             if self.questions_stages.is_current_question_last():
-                self._popup_message.set_text('Contestant Won $1000000!')
-                self.budget.lose_amount(1000000)
+                self._popup_message.set_text(PopupMessage.contestant_won_message())
+                self.budget.lose_amount(self.questions_stages.get_current_prize_money())
             elif self.current_contestant.should_withdraw():
-                exit_money = self.questions_stages.get_current_exit_money()
-                self._popup_message.set_text('Contestant Withdrawn with ${}!'.format(exit_money))
-                self.budget.lose_amount(exit_money)
+                self.budget.lose_amount(self.questions_stages.get_current_prize_money())
+                self._popup_message.set_text(PopupMessage.contestant_withdrawn_message())
             else:
+                if self._check_if_player_lost_or_won():
+                    return
                 self.questions_stages.next_stage()
                 return
         else:
-            self._popup_message.set_text('Contestant Lost!')
+            self._popup_message.set_text(PopupMessage.contestant_lost_message())
+
+        if self._check_if_player_lost_or_won():
+            return
         self._popup_message.show(on_continue_callback=lambda: self.next_contestant())
 
     def pause_gameplay(self):
@@ -184,10 +208,14 @@ class Game(arcade.Window, CallbacksRegisterer):
         self._is_gameplay_paused = False
 
     def player_won(self):
-        self.pause_gameplay()
+        self._game_ended = True
+        self._popup_message.set_text(PopupMessage.player_won_message())
+        self._popup_message.show(on_continue_callback=lambda: self.new_game())
 
     def player_lost(self):
-        self.pause_gameplay()
+        self._game_ended = True
+        self._popup_message.set_text(PopupMessage.player_lost_message())
+        self._popup_message.show(on_continue_callback=lambda: self.new_game())
 
     def on_update(self, delta_time: float):
         for timer in timers[:]:

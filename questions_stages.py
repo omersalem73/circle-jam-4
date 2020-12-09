@@ -4,8 +4,6 @@ from globals import get_game, sleep_before, SCREEN_WIDTH, SCREEN_HEIGHT
 from label import Label
 from ui_base import VisibilityToggle
 
-SHOW_COST_PER_STAGE = 7000
-
 
 class Stage:
     def __init__(self, money, is_exit_point=False):
@@ -15,7 +13,7 @@ class Stage:
 
 
 STAGES = [Stage(1000), Stage(8000), Stage(16000, True), Stage(32000),
-          Stage(125000, True), Stage(500000), Stage(1000000, True)]
+          Stage(125000, True), Stage(500000), Stage(1000000)]
 
 
 class QuestionsStages(VisibilityToggle):
@@ -40,10 +38,8 @@ class QuestionsStages(VisibilityToggle):
     def is_currently_on_exit_point(self):
         return STAGES[self._current_stage_index].is_exit_point
 
-    def get_current_exit_money(self):
-        if STAGES[self._current_stage_index].is_exit_point:
-            return STAGES[self._current_stage_index].money
-        return 0
+    def get_current_prize_money(self):
+        return STAGES[self._current_stage_index].money
 
     def reset_label_colors(self):
         for lbl, stage in zip(self._stages, STAGES):
@@ -60,10 +56,7 @@ class QuestionsStages(VisibilityToggle):
     def next_stage(self):
         get_game().background_controller.show_select_question()
         self._current_stage_index += 1
-        prev_question = get_game().on_screen_question.question_data
         get_game().on_screen_question.reset_data()
-        get_game().audience_share.update(prev_question)
-        get_game().budget.lose_amount(SHOW_COST_PER_STAGE)
         self.show()
         get_game().question_pool.show()
 

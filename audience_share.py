@@ -58,9 +58,18 @@ class AudienceShare:
             return as_str[:4] + '%'
         return as_str[:5] + '%'
 
+    def reset(self, diff_only=False):
+        if diff_only:
+            self._last_share_diff = 0
+            self._diff_label.text = ''
+            return
+        self.update()
+
     def update(self, question_answered: typing.Optional[QuestionData] = None):
         if question_answered is None:
             self._share = type(self).START_SHARE
+            self._last_share_diff = 0
+            self._diff_label.text = ''
         else:
             self._calc_share(question_answered.difficulty)
         self._label.text = 'Rating: {}'.format(AudienceShare._share_as_str(self._share))
@@ -68,7 +77,9 @@ class AudienceShare:
         self._label.y = get_game().budget.ui.get_y() - self._label.get_size()[1] - 5
         self._diff_label.x = self._label.x + self._label.get_size()[0] + 10
         self._diff_label.y = self._label.y
-        get_game().budget.add_amount(int(self._last_share_diff * 5000))
+
+        if self._last_share_diff != 0:
+            get_game().budget.add_amount(int(self._last_share_diff * 5000))
 
     def on_draw(self):
         w_sum = self._label.get_size()[0]

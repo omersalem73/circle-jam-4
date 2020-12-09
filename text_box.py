@@ -3,7 +3,7 @@ import arcade
 
 class TextBox:
 
-    def __init__(self, text, bounds_w, x, y, color=arcade.color.WHITE, font_size=20, is_center_aligned=False):
+    def __init__(self, text, x, y, bounds_w=0, color=arcade.color.WHITE, font_size=20, is_center_aligned=False):
         self._text = None
         self._lines = None
         self._bounds_w = bounds_w
@@ -41,7 +41,8 @@ class TextBox:
 
         for word in words:
             if arcade.get_text_image(current_line + word, self._color, self._font_size).width > self._bounds_w:
-                lines.append(current_line.strip())
+                line = current_line.strip()
+                lines.append((line, arcade.get_text_image(line, self._color, self._font_size)))
                 current_line = ''
                 continue
             current_line += word + ' '
@@ -56,8 +57,13 @@ class TextBox:
     def text(self, text):
         self._text = text
         self._lines = []
-        for user_line in self._text.split('\n'):
-            self._lines += self._parse_line(user_line)
+
+        if self._bounds_w > 0:
+            for user_line in self._text.split('\n'):
+                self._lines += self._parse_line(user_line)
+        else:
+            for user_line in self._text.split('\n'):
+                self._lines.append((user_line, arcade.get_text_image(user_line, self._color, self._font_size)))
 
     def get_size(self):
         max_w = 0

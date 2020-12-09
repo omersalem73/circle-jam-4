@@ -21,7 +21,7 @@ class QuestionUI:
         self._right_answer_bg = arcade.load_texture("images/answer_right.png")
         self._right_answer_selected_bg = arcade.load_texture("images/answer_right_selected.png")
         self._right_answer_correct_bg = arcade.load_texture("images/answer_right_correct.png")
-        self._question_label = TextBox('', SCREEN_WIDTH * 0.7, 0, 0, font_size=26, is_center_aligned=True)
+        self._question_label = TextBox('', 0, 0, bounds_w=SCREEN_WIDTH * 0.7, font_size=26, is_center_aligned=True)
         self._answer_labels = [Label('', 0, 0) for _ in range(4)]
 
         self._question_ratio = self._question_bg.width / self._question_bg.height
@@ -179,7 +179,7 @@ class Question:
     def is_selected_answer_correct(self):
         return self._get_selected_answer() == self.get_correct_answer()
 
-    @sleep_before(4)
+    @sleep_before(2)
     def verify_answered_question(self):
         correct = self.get_correct_answer()
         correct.mark_as_correct(get_game().next_stage_or_new_contestant)
