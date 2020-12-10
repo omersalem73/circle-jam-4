@@ -6,10 +6,20 @@ from globals import SCREEN_WIDTH, SCREEN_HEIGHT
 class BackgroundController:
 
     def __init__(self):
-        self._host_bg = arcade.load_texture("images/1_pixel.png")
-        self._contestant_bg = arcade.load_texture("images/2_pixel.png")
-        self._select_question_bg = arcade.load_texture("images/3_pixel.png")
-        self._show_question_bg = arcade.load_texture("images/4_pixel.png")
+        self._contestant_bgs = [arcade.load_texture("images/contestant_{}.png".format(i + 1)) for i in range(3)]
+        self._select_question_bgs = [arcade.load_texture("images/select_question_{}.png".format(i + 1)) for i in range(3)]
+        self._show_question_bgs = [arcade.load_texture("images/show_question_{}.png".format(i + 1)) for i in range(3)]
+
+        self._host_bg = arcade.load_texture("images/host.png")
+        self._contestant_bg = None
+        self._select_question_bg = None
+        self._show_question_bg = None
+        self._current_bg = None
+
+    def set_index(self, index):
+        self._contestant_bg = self._contestant_bgs[index]
+        self._select_question_bg = self._select_question_bgs[index]
+        self._show_question_bg = self._show_question_bgs[index]
         self._current_bg = self._select_question_bg
 
     def show_host(self):

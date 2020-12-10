@@ -6,10 +6,11 @@ from question import Question
 
 class Contestant:
 
-    def __init__(self, name, answer_prob, prize_to_quit_prob):
+    def __init__(self, name, answer_prob, prize_to_quit_prob, bg_images_index):
         self._name = name
         self._answer_prob = answer_prob
         self._prize_to_quit_prob = prize_to_quit_prob
+        self._bg_images_index = bg_images_index
 
     @property
     def name(self):
@@ -22,6 +23,10 @@ class Contestant:
     @property
     def prize_to_quit_prob(self):
         return self._prize_to_quit_prob
+
+    @property
+    def bg_images_index(self):
+        return self._bg_images_index
 
     def answer(self, question: Question):
         correct_answer = question.get_correct_answer()

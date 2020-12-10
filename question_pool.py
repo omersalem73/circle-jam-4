@@ -36,6 +36,11 @@ class QuestionsPool(VisibilityToggle):
 
     def _on_difficulty_clicked(self, index):
         get_game().pause_gameplay()
+        [
+            get_game().sound_controller.play_select_easy,
+            get_game().sound_controller.play_select_average,
+            get_game().sound_controller.play_select_hard
+        ][index]()
         self._show_selected_answer(index)
 
     def show(self):

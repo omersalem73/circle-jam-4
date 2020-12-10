@@ -2,8 +2,9 @@ import random
 
 import arcade
 
-from globals import timers, SCREEN_WIDTH, SCREEN_HEIGHT, sleep_before
+from globals import timers, SCREEN_WIDTH, SCREEN_HEIGHT, sleep_before, add_timer
 from questions_data import questions_data
+from sound_controller import SoundController
 from ui_base import CallbacksRegisterer
 from question import Question, QuestionUI
 from question_data import QuestionDifficulty
@@ -22,7 +23,7 @@ class Game(arcade.Window, CallbacksRegisterer):
 
     POSSIBLE_CONTESTANTS = [
         Contestant(
-            'Daniyal Mcgregor',
+            'Daniela Mcgregor',
             answer_prob={
                 QuestionDifficulty.HARD: 0.3,
                 QuestionDifficulty.AVERAGE: 0.7,
@@ -31,7 +32,8 @@ class Game(arcade.Window, CallbacksRegisterer):
             prize_to_quit_prob={
                 16000: 0.3,
                 125000: 0.7
-            }
+            },
+            bg_images_index=0
         ),
         Contestant(
             'Susan Cardenas',
@@ -43,7 +45,8 @@ class Game(arcade.Window, CallbacksRegisterer):
             prize_to_quit_prob={
                 16000: 0.1,
                 125000: 0.6
-            }
+            },
+            bg_images_index=2
         ),
         Contestant(
             'Theo Paul',
@@ -55,7 +58,8 @@ class Game(arcade.Window, CallbacksRegisterer):
             prize_to_quit_prob={
                 16000: 0.0,
                 125000: 0.1
-            }
+            },
+            bg_images_index=1
         ),
         Contestant(
             'Lynda Fowler',
@@ -67,7 +71,8 @@ class Game(arcade.Window, CallbacksRegisterer):
             prize_to_quit_prob={
                 16000: 0.7,
                 125000: 0.9
-            }
+            },
+            bg_images_index=0
         ),
         Contestant(
             'Antonio Kenny',
@@ -79,16 +84,18 @@ class Game(arcade.Window, CallbacksRegisterer):
             prize_to_quit_prob={
                 16000: 0.3,
                 125000: 0.4
-            }
+            },
+            bg_images_index=1
         )
     ]
 
     def __init__(self):
         arcade.Window.__init__(self, SCREEN_WIDTH, SCREEN_HEIGHT, fullscreen=False)
         CallbacksRegisterer.__init__(self)
-        self._background_color = arcade.color.DARK_BLUE
+        self._splash_screen = arcade.load_texture("images/logo.png")
+        self._is_splash_screen_visible = True
         self._window_size = SCREEN_WIDTH, SCREEN_HEIGHT
-        self._is_gameplay_paused = False
+        self._is_gameplay_paused = True
         self._on_screen_question = None
         self._on_screen_question_data = None
         self._questions_pool = None
@@ -100,8 +107,10 @@ class Game(arcade.Window, CallbacksRegisterer):
         self._background_controller = None
         self._popup_message = None
         self._game_ended = False
+        self._sound_controller = None
 
     def init(self):
+        self._splash_screen = arcade.load_texture("images/logo.png")
         self._budget = Budget()
         self._audience_share = AudienceShare()
         self._on_screen_question = Question()
@@ -110,9 +119,18 @@ class Game(arcade.Window, CallbacksRegisterer):
         self._background_controller = BackgroundController()
         self._current_contestant = random.choice(type(self).POSSIBLE_CONTESTANTS)
         self._popup_message = PopupMessage()
+        self._sound_controller = SoundController()
 
+        self._sound_controller.play_theme_in_loop()
+        self._background_controller.set_index(self.current_contestant.bg_images_index)
         self.question_pool.show()
         self._popup_message.show(on_continue_callback=self._popup_next_contestant_callback)
+
+        add_timer(3, self._after_splash_screen)
+
+    def _after_splash_screen(self):
+        self._is_splash_screen_visible = False
+        self._is_gameplay_paused = False
 
     def _popup_next_contestant_callback(self):
         self.question_pool.show()
@@ -126,6 +144,7 @@ class Game(arcade.Window, CallbacksRegisterer):
         self.questions_stages.reset()
         self.on_screen_question.reset_data()
 
+        self._background_controller.set_index(self.current_contestant.bg_images_index)
         self.questions_stages.show()
         self.question_pool.show()
 
@@ -138,6 +157,10 @@ class Game(arcade.Window, CallbacksRegisterer):
         self.audience_share.reset()
         self.next_contestant()
         self._game_ended = False
+
+    @property
+    def sound_controller(self) -> SoundController:
+        return self._sound_controller
 
     @property
     def audience_share(self) -> AudienceShare:
@@ -237,6 +260,9 @@ class Game(arcade.Window, CallbacksRegisterer):
         arcade.start_render()
         self._background_controller.on_draw()
         CallbacksRegisterer.on_draw(self)
+
+        if self._is_splash_screen_visible:
+            arcade.draw_lrwh_rectangle_textured(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, self._splash_screen)
 
     def _calc_viewport_ratio(self):
         return SCREEN_WIDTH / self._window_size[0], SCREEN_HEIGHT / self._window_size[1]

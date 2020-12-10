@@ -51,8 +51,8 @@ class PopupMessage(VisibilityToggle):
         prize_money = get_game().questions_stages.get_current_prize_money()
         return (
             f'{contestant.name} lost the ${prize_money} question!\n'
-            'Total profit this round: +30000\n'
-            'Total rating this round: +2.75'
+            f'Total profit this round: {get_game().budget.get_diff_sum()}\n'
+            f'Total rating this round: {get_game().audience_share.get_diff_sum()}'
         )
 
     @staticmethod
@@ -61,8 +61,8 @@ class PopupMessage(VisibilityToggle):
         prize_money = get_game().questions_stages.get_current_prize_money()
         return (
             f'{contestant.name} withdrawn with ${prize_money}!\n'
-            'Total profit this round: +30000\n'
-            'Total rating this round: +2.75'
+            f'Total profit this round: {get_game().budget.get_diff_sum()}\n'
+            f'Total rating this round: {get_game().audience_share.get_diff_sum()}'
         )
 
     @staticmethod
@@ -71,8 +71,8 @@ class PopupMessage(VisibilityToggle):
         return (
             f'{contestant.name} won the MILLION DOLLARS PRIZE!!!\n'
             'Sadly for you...\n'
-            'Total profit this round: +30000\n'
-            'Total rating this round: +2.75'
+            f'Total profit this round: {get_game().budget.get_diff_sum()}\n'
+            f'Total rating this round: {get_game().audience_share.get_diff_sum()}'
         )
 
     @staticmethod
