@@ -35,6 +35,10 @@ class QuestionsStages(VisibilityToggle):
             current_y += lbl.get_size()[1] + 10
         get_game().register('on_draw', self.on_draw)
 
+    @property
+    def current_stage_index(self):
+        return self._current_stage_index
+
     def is_currently_on_exit_point(self):
         return STAGES[self._current_stage_index].is_exit_point
 
