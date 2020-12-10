@@ -100,6 +100,7 @@ class Budget:
 
     def __init__(self):
         self._budget = STARTING_BUDGET
+        self._budget_diff_sum = 0
         self._total_time = 0
         self._ui = BudgetUI()
 
@@ -113,6 +114,7 @@ class Budget:
 
     def reset(self):
         self._budget = STARTING_BUDGET
+        self._budget_diff_sum = 0
         self._ui.update(self._budget, self._budget_as_str(self._budget), 0, '')
 
     @property
@@ -134,6 +136,10 @@ class Budget:
             return Budget._abs_budget_as_str_abs(budget)
         return '-' + Budget._abs_budget_as_str_abs(-budget)
 
+    @staticmethod
+    def _diff_as_str(diff):
+        return f'-${abs(diff):,}' if diff < 0 else f'${diff:,}'
+
     def _add_amount(self, amount):
         self._budget += amount
         if self._budget >= WIN_BUDGET:
@@ -142,7 +148,15 @@ class Budget:
         elif self._budget <= LOSE_BUDGET:
             amount = LOSE_BUDGET - (self._budget - amount)
             self._budget = LOSE_BUDGET
-        self._ui.update(self._budget, self._budget_as_str(self._budget), amount, self._budget_as_str(amount))
+        self._budget_diff_sum += amount
+        self._ui.update(self._budget, Budget._budget_as_str(self._budget), amount, Budget._diff_as_str(amount))
+
+    def get_diff_sum(self):
+        diff_sum = self._budget_diff_sum
+        self._budget_diff_sum = 0
+        if diff_sum < 0:
+            return self._budget_as_str(diff_sum)
+        return '+{}'.format(self._budget_as_str(diff_sum))
 
     def add_amount(self, amount):
         self._add_amount(amount)

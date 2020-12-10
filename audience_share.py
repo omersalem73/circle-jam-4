@@ -14,6 +14,7 @@ class AudienceShare:
 
     def __init__(self):
         self._share = type(self).START_SHARE
+        self._share_diff_sum = 0
         self._last_share_diff = 0
         self._label = Label('', 0, 0, font_size=20)
         self._diff_label = Label('', 0, 0, font_size=20)
@@ -22,9 +23,9 @@ class AudienceShare:
 
     def _calc_share(self, question_difficulty: QuestionDifficulty):
         probable_change, possible_shift = {
-            QuestionDifficulty.EASY: (10, 5),
-            QuestionDifficulty.AVERAGE: (20, 3),
-            QuestionDifficulty.HARD: (30, 5)
+            QuestionDifficulty.EASY: (1, 0.5),
+            QuestionDifficulty.AVERAGE: (2, 0.3),
+            QuestionDifficulty.HARD: (3, 0.5)
         }[question_difficulty]
         self._last_share_diff = (random() * probable_change) - possible_shift
 
@@ -33,6 +34,7 @@ class AudienceShare:
 
         self._update_diff_lbl(self._last_share_diff)
         self._share += self._last_share_diff
+        self._share_diff_sum += self._last_share_diff
 
         if self._share > 100:
             self._share = 100
@@ -58,6 +60,12 @@ class AudienceShare:
             return as_str[:4] + '%'
         return as_str[:5] + '%'
 
+    def get_diff_sum(self):
+        diff_sum = self._share_diff_sum
+        self._share_diff_sum = 0
+        sign = '-' if diff_sum < 0 else '+'
+        return sign + AudienceShare._share_as_str(diff_sum)
+
     def reset(self, diff_only=False):
         if diff_only:
             self._last_share_diff = 0
@@ -70,6 +78,7 @@ class AudienceShare:
             self._share = type(self).START_SHARE
             self._last_share_diff = 0
             self._diff_label.text = ''
+            self._share_diff_sum = 0
         else:
             self._calc_share(question_answered.difficulty)
         self._label.text = 'Rating: {}'.format(AudienceShare._share_as_str(self._share))
@@ -79,7 +88,7 @@ class AudienceShare:
         self._diff_label.y = self._label.y
 
         if self._last_share_diff != 0:
-            get_game().budget.add_amount(int(self._last_share_diff * 5000))
+            get_game().budget.add_amount(int(self._last_share_diff * 50000))
 
     def on_draw(self):
         w_sum = self._label.get_size()[0]
