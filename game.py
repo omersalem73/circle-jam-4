@@ -151,6 +151,10 @@ class Game(arcade.Window, CallbacksRegisterer):
         self._popup_message.set_text(PopupMessage.new_contestant_message())
         self._popup_message.show(on_continue_callback=self._popup_next_contestant_callback)
 
+    def disable_all_buttons(self):
+        CallbacksRegisterer.disable_all_buttons(self)
+        self.sound_controller.mute_button.enable()
+
     @sleep_before(1)
     def new_game(self):
         self.budget.reset()
