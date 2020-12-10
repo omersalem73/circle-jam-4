@@ -21,12 +21,30 @@ class AudienceShare:
         self.update()
         get_game().register('on_draw', self.on_draw)
 
+    def get_label_y(self):
+        return self._label.y
+
     def _calc_share(self, question_difficulty: QuestionDifficulty):
-        probable_change, possible_shift = {
-            QuestionDifficulty.EASY: (1, 0.5),
-            QuestionDifficulty.AVERAGE: (2, 0.3),
-            QuestionDifficulty.HARD: (3, 0.5)
-        }[question_difficulty]
+        stage_coeff = (get_game().questions_stages.current_stage_index + 1)
+        if stage_coeff <= 2:
+            probable_change, possible_shift = {
+                QuestionDifficulty.EASY: (1, 0.25),
+                QuestionDifficulty.AVERAGE: (2, 1),
+                QuestionDifficulty.HARD: (2, 2)
+            }[question_difficulty]
+        elif stage_coeff <= 5:
+            probable_change, possible_shift = {
+                QuestionDifficulty.EASY: (0.5, 0.5),
+                QuestionDifficulty.AVERAGE: (1, 0.5),
+                QuestionDifficulty.HARD: (2, 1)
+            }[question_difficulty]
+        else:
+            probable_change, possible_shift = {
+                QuestionDifficulty.EASY: (2, 2),
+                QuestionDifficulty.AVERAGE: (2, 1),
+                QuestionDifficulty.HARD: (2, 0)
+            }[question_difficulty]
+
         self._last_share_diff = (random() * probable_change) - possible_shift
 
         if self._last_share_diff + self._share < 0:
@@ -88,7 +106,7 @@ class AudienceShare:
         self._diff_label.y = self._label.y
 
         if self._last_share_diff != 0:
-            get_game().budget.add_amount(int(self._last_share_diff * 50000))
+            get_game().budget.add_amount(int(self._last_share_diff * 75000))
 
     def on_draw(self):
         w_sum = self._label.get_size()[0]
